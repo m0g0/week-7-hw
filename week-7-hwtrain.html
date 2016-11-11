@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Train Scheduler!</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+</head>
+<body style="background: black">
+    <!-- Jumbotron -->
+    <div class="page-header">
+        <div style="background-image: url(train.jpg);); background-size: 100%;" class="jumbotron">
+        <div class="row well well-lg">
+            <div class="col-md-6 col-md-offset-3">
+                <h1 class="">Train Scheduler</h1>
+            </div>
+    </div>
+    <div class="row">
+        <!-- Train Times Display -->
+        <div class="col-lg-8 col-md-offset-2">
+           <div class="panel panel-primary">
+               <div class="panel-heading">
+                   <h3 class="panel-title">Current Train Schedule</h3>
+                </div>
+                <div class="panel-body">
+                <div id="employee-div">
+                    <table class="table table-hover" id="user-table">
+                    <thead>
+                        <tr>
+                            <th data-field="employee-name" data-formatter="linkFormatter">Train Name</th>
+                            <th data-field="employee-role" data-formattier="linkFormatter">Destination</th>    
+                            <th data-field="start-date" data-formattier="linkFormatter">Next Arrival</th>
+                            <th data-field="monthly-rate" data-formattier="linkFormatter">Frequency(min)</th>
+                            <th data-field="amount-paid" data-formattier="linkFormatter">Minutes Away</th>
+                        </tr>     
+                    </thead>
+                    <tbody id="employee-data">
+                    </tbody>
+                    </table>
+                </div>
+                </div>
+            </div>
+        </div>
+        <!-- Sign-Up Panel-->
+        <div class="col-lg-8 col-md-offset-2">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+               
+                    <h3 class="panel-title">Add a Train</h3>
+             
+                </div>
+                <div class="panel-body">
+                    <!-- Sign-up Form (note the various input "types")-->
+                    <form role="form">
+                        <div class="form-group">
+                            <label for="text">Train Name</label>
+                            <input type="text" class="form-control" id="nameinput">
+                        </div>
+                        <div class="form-group">
+                            <label for="text">Destination</label>
+                            <input type="text" class="form-control" id="destinationinput">
+                        </div>
+                        <div class="form-group">
+                            <label for="text">First Train Time (HH:mm - military time)</label>
+                            <input type="number" class="form-control" id="timeinput">
+                        </div>
+                        <div class="form-group">
+                            <label for="text">Frequency</label>
+                            <input type="number" class="form-control" id="frequencyinput">
+                        </div>
+                        <button type="submit" class="btn btn-default" id="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest compiled and minified CSS & JS -->
+<script src="https://code.jquery.com/jquery.js"></script>
+<!-- LINK TO FIREBASE GOES HERE -->
+<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+<script>
+// ========================================== START CODING BELOW!!
+// Initialize Firebase
+ <script src="https://www.gstatic.com/firebasejs/3.6.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDdviYNn2B5fBSpkXuDOvGIVnPwE18wahY",
+    authDomain: "mo-train-scheduler.firebaseapp.com",
+    databaseURL: "https://mo-train-scheduler.firebaseio.com",
+    storageBucket: "mo-train-scheduler.appspot.com",
+    messagingSenderId: "335400015004"
+  };
+  firebase.initializeApp(config);
+// Create a variable to reference the database
+var database = firebase.database();
+// Initial Values
+var name = "";
+var role = "";
+var time = 0;
+var monthly = "";
+// Capture Button Click
+$("#submit").on("click", function() {
+    // Code in the logic for storing and retrieving the train schedule.
+    // provide initial data to your Firebase database.
+    
+    name = $('#nameinput').val().trim();
+    role = $('#destinationinput').val().trim();
+    time = $('#timeinput').val().trim();
+    monthly = $('#frequencyinput').val().trim();
+    database.ref().push({
+        name: name,
+        role: role,
+        time: time,
+        monthly: monthly
+    });
+    return false;
+    
+    // Don't refresh the page!
+    
+});
+//Firebase watcher + initial loader HINT: .on("value")
+database.ref().on("value", function(snapshot) {
+    // Log everything that's coming out of snapshot
+    console.log(snapshot.val());
+    console.log(snapshot.val().name);
+    console.log(snapshot.val().role);
+    console.log(snapshot.val().time);
+    console.log(snapshot.val().monthly);
+    
+// listening to new children added to database
+    firebase.database().ref().on("child_added", function(snapshot){
+        appendShit = $("#employee-data").append("<tr>");
+        $("#employee-data").append("<td>"+snapshot.val().name+"</td>");
+        $("#employee-data").append("<td>"+snapshot.val().role+"</td>");
+        $("#employee-data").append("<td>"+snapshot.val().time+"</td>");
+        $("#employee-data").append("<td>"+snapshot.val().monthly+"</td>");
+        
+    })
+    // Change the HTML to reflect
+    $("#namedisplay").html(snapshot.val().name);
+    $("#destinationdisplay").html(snapshot.val().role);
+    $("#timedisplay").html(snapshot.val().time);
+    $("#frequencydisplay").html(snapshot.val().monthly);
+// Handle the errors
+}, function(errorObject) {
+    console.log("Errors handled: " + errorObject.code);
+});
+</script>
+</body>
+</html>
